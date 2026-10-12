@@ -1,0 +1,193 @@
+{% extends 'attendance/base.html' %}
+
+{% block title %}{{ student.full_name }} - Student Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Students</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ student.full_name }}</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-person-circle text-primary me-2"></i>{{ student.full_name }}
+        </h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'student_edit' student.pk %}" class="btn btn-outline-primary">
+            <i class="bi bi-pencil-square me-1"></i>Edit Profile
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i>Print Slip
+        </button>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Student Info Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white fw-bold">
+                <i class="bi bi-info-circle me-1 text-primary"></i>Student Details
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                        <span class="text-muted">Student ID:</span>
+                        <span class="font-monospace fw-bold">{{ student.student_id }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                        <span class="text-muted">Gender:</span>
+                        <span class="fw-medium">{{ student.gender }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                        <span class="text-muted">Department:</span>
+                        <span class="fw-medium">{{ student.department }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                        <span class="text-muted">Email:</span>
+                        <span>{{ student.email|default:"Not specified" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                        <span class="text-muted">Phone:</span>
+                        <span>{{ student.phone|default:"Not specified" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                        <span class="text-muted">Date Joined:</span>
+                        <span>{{ student.date_joined|date:"M d, Y" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Enrolled Courses Card -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold">
+                <i class="bi bi-book me-1 text-primary"></i>Enrolled Courses
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for course in enrolled_courses %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                        <div>
+                            <span class="badge bg-light text-dark border me-1">{{ course.code }}</span>
+                            <span class="small fw-semibold">{{ course.name }}</span>
+                        </div>
+                        <a href="{% url 'course_detail' course.pk %}" class="btn btn-sm btn-link p-0">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted small py-3 text-center">
+                        Not explicitly enrolled in any specific course yet.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Performance & History -->
+    <div class="col-lg-8">
+        <!-- Summary Stats Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-3">
+                <div class="row g-2 text-center">
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-light">
+                            <small class="text-muted d-block text-uppercase">Total Classes</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ total_classes }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-light">
+                            <small class="text-muted d-block text-uppercase">Present</small>
+                            <h4 class="fw-bold mb-0 text-success">{{ present_count }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-light">
+                            <small class="text-muted d-block text-uppercase">Absent</small>
+                            <h4 class="fw-bold mb-0 text-danger">{{ absent_count }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-light">
+                            <small class="text-muted d-block text-uppercase">Late</small>
+                            <h4 class="fw-bold mb-0 text-warning">{{ late_count }}</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-semibold small">Overall Attendance Rate</span>
+                        <span class="fw-bold small {% if attendance_rate >= 75 %}text-success{% elif attendance_rate >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                            {{ attendance_rate }}%
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar {% if attendance_rate >= 75 %}bg-success{% elif attendance_rate >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                             style="width: {{ attendance_rate }}%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance History Table -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">
+                    <i class="bi bi-clock-history me-1 text-primary"></i>Attendance History
+                </span>
+                <span class="badge bg-secondary rounded-pill">{{ attendances.count }} Entries</span>
+            </div>
+            <div class="card-body p-0">
+                {% if attendances %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-custom align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Course</th>
+                                <th>Teacher</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in attendances %}
+                            <tr>
+                                <td>{{ rec.date|date:"Y-m-d" }}</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ rec.course.code }}</span>
+                                    <span class="small ms-1">{{ rec.course.name }}</span>
+                                </td>
+                                <td class="text-muted small">{{ rec.course.teacher }}</td>
+                                <td class="text-center">
+                                    {% if rec.status == 'Present' %}
+                                        <span class="badge badge-present"><i class="bi bi-check-lg me-1"></i>Present</span>
+                                    {% elif rec.status == 'Absent' %}
+                                        <span class="badge badge-absent"><i class="bi bi-x-lg me-1"></i>Absent</span>
+                                    {% else %}
+                                        <span class="badge badge-late"><i class="bi bi-clock me-1"></i>Late</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-calendar-x display-6 opacity-50"></i>
+                    <p class="mt-2 mb-0">No attendance records logged for this student yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

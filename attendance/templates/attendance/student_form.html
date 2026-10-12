@@ -1,0 +1,138 @@
+{% extends 'attendance/base.html' %}
+
+{% block title %}{{ title }} - Student Attendance System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-person-lines-fill text-primary me-2"></i>{{ title }}
+                </h2>
+                <p class="text-muted mb-0">Fill in the student details accurately below.</p>
+            </div>
+            <a href="{% url 'student_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to List
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for error in form.non_field_errors %}
+                            <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <!-- Student ID -->
+                        <div class="col-md-6">
+                            <label for="{{ form.student_id.id_for_label }}" class="form-label fw-semibold">
+                                Student ID / Registration No. <span class="text-danger">*</span>
+                            </label>
+                            {{ form.student_id }}
+                            {% if form.student_id.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.student_id.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Unique identifier for this student.</small>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+                            <label for="{{ form.full_name.id_for_label }}" class="form-label fw-semibold">
+                                Full Name <span class="text-danger">*</span>
+                            </label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.full_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-md-6">
+                            <label for="{{ form.gender.id_for_label }}" class="form-label fw-semibold">
+                                Gender <span class="text-danger">*</span>
+                            </label>
+                            {{ form.gender }}
+                            {% if form.gender.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.gender.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Department / Class -->
+                        <div class="col-md-6">
+                            <label for="{{ form.department.id_for_label }}" class="form-label fw-semibold">
+                                Department / Class <span class="text-danger">*</span>
+                            </label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.department.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                                Email Address
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="col-md-6">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label fw-semibold">
+                                Phone Number
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.phone.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Date Joined -->
+                        <div class="col-md-6">
+                            <label for="{{ form.date_joined.id_for_label }}" class="form-label fw-semibold">
+                                Date Joined <span class="text-danger">*</span>
+                            </label>
+                            {{ form.date_joined }}
+                            {% if form.date_joined.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.date_joined.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <a href="{% url 'student_list' %}" class="btn btn-light border px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i>{{ button_text }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'attendance/base.html' %}
+
+{% block title %}Sign In - Student Attendance System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-auto py-4">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle p-3 mb-3 shadow-sm" style="width: 64px; height: 64px;">
+                <i class="bi bi-person-badge-fill fs-2"></i>
+            </div>
+            <h3 class="fw-bold text-dark">Welcome Back</h3>
+            <p class="text-muted small">Sign in to manage students, courses, and attendance records</p>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-semibold text-secondary small">
+                            <i class="bi bi-person me-1"></i>Username
+                        </label>
+                        <input type="text" name="username" id="id_username" class="form-control form-control-lg fs-6" placeholder="Enter your username" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label fw-semibold text-secondary small">
+                            <i class="bi bi-lock me-1"></i>Password
+                        </label>
+                        <input type="password" name="password" id="id_password" class="form-control form-control-lg fs-6" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light border-0 py-3 text-center small text-muted">
+                <i class="bi bi-shield-lock me-1"></i>Protected School Administration Portal
+            </div>
+        </div>
+
+        <div class="text-center mt-3 text-muted small">
+            Tip: Create your administrator credentials via <code>python manage.py createsuperuser</code>
+        </div>
+    </div>
+</div>
+{% endblock %}

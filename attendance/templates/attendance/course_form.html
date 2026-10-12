@@ -1,0 +1,149 @@
+{% extends 'attendance/base.html' %}
+
+{% block title %}{{ title }} - Student Attendance System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-journal-plus text-primary me-2"></i>{{ title }}
+                </h2>
+                <p class="text-muted mb-0">Configure course details, instructor, and enrolled student roster.</p>
+            </div>
+            <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Courses
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for error in form.non_field_errors %}
+                            <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <!-- Course Name -->
+                        <div class="col-md-8">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold">
+                                Course / Class Name <span class="text-danger">*</span>
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Course Code -->
+                        <div class="col-md-4">
+                            <label for="{{ form.code.id_for_label }}" class="form-label fw-semibold">
+                                Course Code <span class="text-danger">*</span>
+                            </label>
+                            {{ form.code }}
+                            {% if form.code.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.code.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Teacher / Lecturer -->
+                        <div class="col-12">
+                            <label for="{{ form.teacher.id_for_label }}" class="form-label fw-semibold">
+                                Teacher / Lecturer <span class="text-danger">*</span>
+                            </label>
+                            {{ form.teacher }}
+                            {% if form.teacher.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.teacher.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-12">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+                                Description / Notes
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.description.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Enrolled Students (Optional) -->
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-semibold mb-0">
+                                    <i class="bi bi-people me-1"></i>Enrolled Students (Optional)
+                                </label>
+                                <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" id="toggleAllStudents">
+                                    Select / Deselect All
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mb-2">
+                                Check the students who attend this class. If no students are selected, attendance will be open to all students.
+                            </small>
+
+                            <div class="p-3 bg-light rounded border" style="max-height: 240px; overflow-y: auto;" id="studentsCheckboxContainer">
+                                {% if form.students.field.queryset.exists %}
+                                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                                        {% for choice in form.students %}
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    {{ choice.tag }}
+                                                    <label class="form-check-label small" for="{{ choice.id_for_label }}">
+                                                        {{ choice.choice_label }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted small mb-0">No students available in the system yet. You can enroll them later.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <a href="{% url 'course_list' %}" class="btn btn-light border px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i>{{ button_text }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggleAllStudents');
+        const container = document.getElementById('studentsCheckboxContainer');
+        if (toggleBtn && container) {
+            let allChecked = false;
+            toggleBtn.addEventListener('click', function() {
+                const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                allChecked = !allChecked;
+                checkboxes.forEach(cb => cb.checked = allChecked);
+            });
+        }
+    });
+</script>
+{% endblock %}
